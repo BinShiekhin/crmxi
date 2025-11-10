@@ -354,13 +354,14 @@ I love adventures, exploring new things, and I'm always eager to learn and grow 
 modify this form HTML and place wherever you want your formPlace this script at the end of the body tag -->
         <form id="my-form" class="contactForm" data-aos="zoom-in" data-aos-duration="1000" action="https://formspree.io/f/mzzveqyn" method="POST">
           <div class="input-box">
-            <input type="email" name="email"  placeholder="Email" required />
+            <input type="email" value="disabled" name="email"  placeholder="Email" required />
           </div>
 
           <textarea
             type="text"
             name="message"
             id=""
+value="disabled"
             cols="30"
             rows="10"
             placeholder="Your Message"
@@ -373,7 +374,7 @@ modify this form HTML and place wherever you want your formPlace this script at 
             data-aos-delay="500"
             data-aos-duration="1000"
           >
-            <button id="my-form-button" href="#!" class="btn btn-red" name="submit" >
+            <button value="disabled" id="my-form-button" href="#!" class="btn btn-red" name="submit" >
               Send Message
             </button>
             <p id="my-form-status"></p>
