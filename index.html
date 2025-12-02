@@ -470,76 +470,56 @@ var form = document.getElementById("my-form");
     ></script>
     <script type="module" src="main.js"></script>
 
-<--!-->
-<!-- ==================== نافذة المراجعة أسفل الموقع ==================== -->
-<!-- ==================== نافذة المراجعة أسفل الموقع ==================== -->
+<--!--><!-- ==================== بطاقات أسفل الصفحة ==================== -->
 <style>
-.anki-drawer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
+.anki-footer {
   width: 100%;
-  max-height: 420px;
   background: #0b0b0c;
-  border-top: 2px solid #ffd166;
   color: #eee;
   font-family: "Noto Naskh Arabic", system-ui, Arial;
-  box-shadow: 0 -6px 20px rgba(0,0,0,0.7);
-  display: flex;
-  flex-direction: column;
-  z-index: 9999;
-  transition: max-height 0.3s ease;
-}
-.anki-drawer.collapsed { max-height: 40px; }
-.anki-drawer .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6px 12px;
-  cursor: pointer;
-  font-weight: bold;
-  color: #ffd166;
-}
-.anki-drawer .content {
-  flex: 1;
-  overflow-y: auto;
+  border-top: 2px solid #ffd166;
   padding: 10px 12px;
+  box-sizing: border-box;
+  display: none; /* ستظهر عند النزول للأسفل */
+}
+.anki-footer .content {
   display: grid;
   grid-template-columns: 1fr;
   gap: 10px;
+  max-height: 400px;
+  overflow-y: auto;
 }
-.anki-drawer .card{
+.anki-footer .card{
   background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
   border:1px solid rgba(255,255,255,0.04);
   border-radius:12px;
   padding:12px;
   min-height:120px;
 }
-.anki-drawer .front{font-size:16px;line-height:1.5}
-.anki-drawer .show-btn{
+.anki-footer .front{font-size:16px;line-height:1.5}
+.anki-footer .show-btn{
   background:transparent;border:2px solid #ffd166;color:#ffd166;padding:8px 12px;border-radius:8px;font-size:16px;cursor:pointer;margin-top:8px;width:100%;
 }
-.anki-drawer .rating-row{display:flex;gap:8px;margin-top:8px}
-.anki-drawer .rate-btn{flex:1;padding:8px;border:none;border-radius:8px;font-weight:700;color:#fff;font-size:14px;cursor:pointer;display:none}
-.anki-drawer .rate-btn.easy{background:#2ecc71}
-.anki-drawer .rate-btn.medium{background:#f39c12}
-.anki-drawer .rate-btn.hard{background:#e74c3c}
-.anki-drawer .cloze-btn{background:#ffcc00;color:#000;border:none;padding:0 6px;margin:0 2px;border-radius:6px;cursor:pointer;font-weight:700;font-size:0.9em;line-height:1.4}
-.anki-drawer .revealed{background:rgba(255,255,255,0.02);color:#ffff66;padding:2px 6px;border-radius:6px;margin:0 2px;display:inline-block}
-.anki-drawer .small{font-size:12px;color:#9aa0a6;text-align:center;margin-top:6px}
-.anki-drawer .whatsapp-msg{
+.anki-footer .rating-row{display:flex;gap:8px;margin-top:8px}
+.anki-footer .rate-btn{flex:1;padding:8px;border:none;border-radius:8px;font-weight:700;color:#fff;font-size:14px;cursor:pointer;display:none}
+.anki-footer .rate-btn.easy{background:#2ecc71}
+.anki-footer .rate-btn.medium{background:#f39c12}
+.anki-footer .rate-btn.hard{background:#e74c3c}
+.anki-footer .cloze-btn{background:#ffcc00;color:#000;border:none;padding:0 6px;margin:0 2px;border-radius:6px;cursor:pointer;font-weight:700;font-size:0.9em;line-height:1.4}
+.anki-footer .revealed{background:rgba(255,255,255,0.02);color:#ffff66;padding:2px 6px;border-radius:6px;margin:0 2px;display:inline-block}
+.anki-footer .small{font-size:12px;color:#9aa0a6;text-align:center;margin-top:6px}
+.anki-footer .whatsapp-msg{
   text-align:center;
   font-size:13px;
   margin-top:6px;
   color:#ffd166;
 }
-.anki-drawer .whatsapp-msg a{color:#ffd166;text-decoration:none;font-weight:bold}
+.anki-footer .whatsapp-msg a{color:#ffd166;text-decoration:none;font-weight:bold}
 </style>
 
-<div class="anki-drawer collapsed" id="ankiDrawer">
-  <div class="header" id="ankiDrawerHeader">مراجعة البطاقات ▼</div>
+<div class="anki-footer" id="ankiFooter">
   <div class="content" id="cardsContainer">
-    <!-- البطاقات سيتم توليدها هنا -->
+    <!-- البطاقات ستظهر هنا -->
   </div>
   <div class="whatsapp-msg">
     للحصول على الملخصات بشكل كامل ومنسق ومع الشرح والصور والترجمة تواصل عبر 
@@ -548,11 +528,6 @@ var form = document.getElementById("my-form");
 </div>
 
 <script>
-// تفعيل فتح/إغلاق النافذة
-const drawer = document.getElementById('ankiDrawer');
-const header = document.getElementById('ankiDrawerHeader');
-header.addEventListener('click', ()=> drawer.classList.toggle('collapsed'));
-
 // ---------------- بيانات البطاقات (أمثلة) ----------------
 const cardsData = [
   "The {{c1::Acids}} have a <span style='color:yellow'>sour</span> taste.",
@@ -589,13 +564,12 @@ for(let i=0;i<4 && i<cardsData.length;i++){
   container.appendChild(createCardElement(cardsData[i]));
 }
 
-// ---------------- وظائف الكشف والتقييم ----------------
+// كشف الإجابة والتقييم لكل بطاقة
 container.querySelectorAll('.card').forEach(card=>{
   const front = card.querySelector('.front');
   const showBtn = card.querySelector('.show-btn');
   const ratingRow = card.querySelector('.rating-row');
 
-  // كشف cloze عند الضغط على الفراغ
   front.addEventListener('click', e=>{
     const btn = e.target.closest('.cloze-btn');
     if(!btn) return;
@@ -607,7 +581,6 @@ container.querySelectorAll('.card').forEach(card=>{
     }
   });
 
-  // زر إظهار الإجابة
   showBtn.addEventListener('click', ()=>{
     front.querySelectorAll('.cloze').forEach(span=>{
       const decoded = decodeURIComponent(span.getAttribute('data-answer'));
@@ -617,12 +590,19 @@ container.querySelectorAll('.card').forEach(card=>{
     ratingRow.querySelectorAll('.rate-btn').forEach(b=>b.style.display='inline-block');
   });
 
-  // أزرار التقييم
   ratingRow.querySelectorAll('.rate-btn').forEach(btn=>{
     btn.addEventListener('click', ()=>{
-      alert('تم التقييم!'); // لاحقاً يمكن إضافة تسجيل SM-2
+      alert('تم التقييم!');
     });
   });
+});
+
+// ---------------- إظهار البطاقات عند النزول لنهاية الصفحة ----------------
+window.addEventListener('scroll', ()=>{
+  const scrollBottom = window.innerHeight + window.scrollY;
+  if(scrollBottom >= document.body.offsetHeight - 10){ // عند الاقتراب من نهاية الصفحة
+    document.getElementById('ankiFooter').style.display = 'block';
+  }
 });
 </script>
 
