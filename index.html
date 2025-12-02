@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+1<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -469,5 +469,49 @@ var form = document.getElementById("my-form");
       referrerpolicy="no-referrer"
     ></script>
     <script type="module" src="main.js"></script>
+
+<--!-->
+
+const ratingRow = document.getElementById('ratingRow');
+function showCard(){
+  if(currentCardIndex >= cards.length) currentCardIndex=0;
+  const c = cards[currentCardIndex];
+  cardFront.innerHTML = renderClozeContent(c.html);
+  ratingRow.querySelectorAll('.rate-btn').forEach(b=>b.style.display='none');
+  showBtn.disabled = false;
+}
+showCard();
+
+// كشف cloze واحد عند الضغط
+cardFront.addEventListener('click', e=>{
+  const btn = e.target.closest('.cloze-btn');
+  if(!btn) return;
+  const span = btn.closest('.cloze');
+  span.innerHTML = <span class="revealed">${decodeURIComponent(span.getAttribute('data-answer'))}</span>;
+  if(cardFront.querySelectorAll('.cloze').length === cardFront.querySelectorAll('.revealed').length){
+    showBtn.disabled=true;
+    ratingRow.querySelectorAll('.rate-btn').forEach(b=>b.style.display='inline-block');
+  }
+});
+
+// زر اظهار الإجابة
+showBtn.addEventListener('click', ()=>{
+  cardFront.querySelectorAll('.cloze').forEach(span=>{
+    const decoded = decodeURIComponent(span.getAttribute('data-answer'));
+    span.innerHTML = <span class="revealed">${decoded}</span>;
+  });
+  showBtn.disabled = true;
+  ratingRow.querySelectorAll('.rate-btn').forEach(b=>b.style.display='inline-block');
+});
+
+// أزرار التقييم: تنقّل للبطاقة التالية
+ratingRow.querySelectorAll('.rate-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    currentCardIndex++;
+    showCard();
+  });
+});
+</script>
+
   </body>
 </html>
